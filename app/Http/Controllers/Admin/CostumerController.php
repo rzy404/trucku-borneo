@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use App\Models\User;
-use Spatie\Permission\Models\Role;
+use App\Models\Costumer as cost;
 use DB;
 use Hash;
 use Carbon\Carbon;
@@ -43,6 +42,49 @@ class CostumerController extends Controller
 
     public function index(Request $request)
     {
-        return view('admin.manage-user.costumer.index');
+        $data = cost::all();
+        return view('admin.manage-user.costumer.index', compact(['data']))
+            ->with('i', ($request->input('page', 1) - 1) * 5);
+    }
+
+    public function store(Request $request)
+    {
+        $this->validate($request, [
+            'nama' => 'required',
+            'email' => 'required|email|unique:tb_user,email',
+            'password' => 'required|same:confirm-password',
+        ]);
+
+        $input = $request->all();
+        $input['password'] = Hash::make($input['password']);
+
+        $cost = cost::create($input);
+
+        if ($cost) {
+            return redirect()
+                ->route('user.cost.index')
+                ->with('success', 'Costumer Berhasil ditambahkan');
+        } else {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with([
+                    'error' => 'Costumer Gagal ditambahkan'
+                ]);
+        }
+    }
+
+    public function show($id)
+    {
+        $costu = cost::find($id);
+
+        return response()->json(['cost' => $costu]);
+    }
+
+    public function delete($id)
+    {
+        cost::find($id)->delete();
+        return redirect()->route('user.cost.index')
+            ->with('success', 'Data Berhasil dihapus');
     }
 }

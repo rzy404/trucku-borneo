@@ -16,6 +16,7 @@
     <link href="{{ asset('css/fonts/poppins.css') }}" rel="stylesheet">
     <!-- Datatable -->
     <link href="{{ asset('vendor/datatables/css/jquery.dataTables.min.css') }}" rel="stylesheet">
+    @yield('css')
 </head>
 
 <body>
@@ -77,11 +78,11 @@
     <!-- Sweetalert -->
     <script src="{{ asset('vendor/sweetalert/sweetalert.min.js') }}"></script>
     <script>
-        $(function () {
-			$('#datetimepicker1').datetimepicker({
-				inline: true,
-			});
-		});
+        $(function() {
+            $('#datetimepicker1').datetimepicker({
+                inline: true,
+            });
+        });
     </script>
     @yield('script')
 </body>

@@ -40,11 +40,11 @@
                         <img src="{{ asset('images/' . Auth::user()->avatar) }}"
                             class="img-fluid rounded-circle mt-4 mb-4 w-100" alt="">
                         <div class="row mt-3 sp-3">
-                            <div class="profile-name px-4 pt-2">
+                            <div class="profile-name px-2 pt-2">
                                 <h4 class="text-primary mb-0">{{ Auth::user()->name }}</h4>
                                 <p class="mb-0">{{ Auth::user()->username }}</p>
                             </div>
-                            <div class="profile-name px-4 pt-2">
+                            <div class="profile-name px-2 pt-2">
                                 <h4 class="text-primary mb-0">{{ Auth::user()->email }}</h4>
                                 <p class="mb-0">Email</p>
                             </div>

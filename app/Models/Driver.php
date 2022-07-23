@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
-class Costumer extends Model
+class Driver extends Model
 {
     use HasFactory, HasFactory;
 
@@ -17,25 +17,14 @@ class Costumer extends Model
      * @var array<int, string>
      */
 
-    protected $table = "tb_costumer";
+    protected $table = "tb_driver";
     protected $fillable = [
         'nama',
-        'email',
-        'password',
         'avatar',
-        'no_telpon',
-        'status_user',
-        'perusahaan'
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'status_user',
+        'tgl_lahir',
+        'alamat',
+        'agama',
+        'no_telpon'
     ];
 
     public $timestamps = false;

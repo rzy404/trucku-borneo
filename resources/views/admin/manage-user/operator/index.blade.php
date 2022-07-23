@@ -15,8 +15,7 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Data Operator</h4>
-                <button type="button" class="btn btn-rounded btn-success" data-toggle="modal"
-                    data-target="#ModalOperator" id="addCostumer">
+                <button type="button" class="btn btn-rounded btn-success" data-toggle="modal" data-target="#ModalOperator" id="addOperator">
                     <span class="btn-icon-left text-success">
                         <i class="fa fa-plus color-success"></i>
                     </span>Add
@@ -46,7 +45,6 @@
                                     @else
                                     {{ $op->username }}
                                     @endif
-                                    {{-- {{ $op->username }} --}}
                                 </td>
                                 <td>
                                     <a href="javascript:void(0);">
@@ -63,15 +61,12 @@
                                 <td>
                                     <div class="d-flex">
                                         @if ($op->username != Auth::user()->username)
-                                        <a class="btn btn-primary shadow btn-xs sharp mr-1" id="editCustomer"
-                                            data-id="{{ $op->id }}" data-toggle="modal" data-target="#ModalOperator"><i
-                                                class="fa fa-pencil"></i></a>
+                                        <a class="btn btn-primary shadow btn-xs sharp mr-1" id="editOperator" data-id="{{ $op->id }}" data-toggle="modal" data-target="#ModalOperator"><i class="fa fa-pencil"></i></a>
                                         <form method="POST" action="{{ route('user.operator.delete', $op->id) }}">
                                             @csrf
                                             @method('DELETE')
                                             <input name="_method" type="hidden" value="DELETE">
-                                            <button type="submit" class="btn btn-danger shadow btn-xs sharp"
-                                                id="deleteOperator"><i class="fa fa-trash"></i></button>
+                                            <button type="submit" class="btn btn-danger shadow btn-xs sharp" id="deleteOperator"><i class="fa fa-trash"></i></button>
                                         </form>
                                         @else
                                         <span>No Action</span>
@@ -94,15 +89,15 @@
 @endsection
 @section('script')
 <script>
-    $(document).ready(function () {
-    $('#dataOperator').DataTable();
-});
+    $(document).ready(function() {
+        $('#dataOperator').DataTable();
+    });
 </script>
 <script>
-    $(document).on('click', '#addCostumer', function() {
+    $(document).on('click', '#addOperator', function() {
         $.ajaxSetup({
             headers: {
-                'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
@@ -117,11 +112,11 @@
         })
     });
 
-    $(document).on('click', '#editCustomer', function() {
+    $(document).on('click', '#editOperator', function() {
         $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
         });
         var id = $(this).data('id');
         var url2 = "{{ url('user/operator/update/') }}" + '/' + id;
@@ -129,17 +124,20 @@
         $.ajax({
             type: "GET",
             url: "{{ url('user/operator/edit/') }}" + '/' + id,
-            data:{id: id},
+            data: {
+                id: id
+            },
             dataType: 'json',
             cache: false,
-            success: function (data) { 
+            success: function(data) {
                 $('#ModalOperator').modal('show');
                 $('#titleOperator').html("Edit Operator");
                 $('#formOperator').attr('action', url2);
                 $('#btnModal').html("Update");
                 $('#namaOperator').val(data.user.name);
                 $('#email').val(data.user.email);
-                $('#roles').val(data.userRole);  
+                $('#roles').val(data.userRole);
+                console.log(data.user.name);
             }
         });
     });
@@ -147,7 +145,7 @@
     $(document).ready(function() {
         $('body').on('click', '#deleteOperator', function(e) {
             e.preventDefault();
-            var form =  $(this).closest("form");
+            var form = $(this).closest("form");
             var name = $(this).data("name");
             console.log(name);
             swal({

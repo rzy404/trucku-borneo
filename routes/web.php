@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Auth\LoginController as Login;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\OperatorController as Operator;
 use App\Http\Controllers\Admin\CostumerController as Costu;
+use App\Http\Controllers\Admin\SopirController as Driver;
 // use App\Http\Controllers\RoleController;
 // use App\Http\Controllers\UserController;
 // use App\Http\Controllers\ProductController;
@@ -50,6 +51,13 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     //route costumer
     Route::prefix('costumer')->name('cost.')->group(function () {
         Route::get('/', [Costu::class, 'index'])->name('index');
+        Route::post('/create', [Costu::class, 'store'])->name('create');
+        Route::get('/view/{id}', [Costu::class, 'show'])->name('view');
+        Route::delete('/delete/{id}', [Costu::class, 'delete'])->name('delete');
+    });
+
+    Route::prefix('driver')->name('driver.')->group(function () {
+        Route::get('/', [Driver::class, 'index'])->name('index');
     });
 });
 
