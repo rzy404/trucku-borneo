@@ -23,7 +23,7 @@
                 <span class="nav-text">Master Data</span>
             </a>
             <ul aria-expanded="false">
-                <li><a href="javascript:void()">Truck</a></li>
+                <li><a href="{{ route('truk.index')}}">Truck</a></li>
                 <li><a href="javascript:void()">Metode Pembayaran</a></li>
                 <li><a href="javascript:void()">Transaksi</a></li>
             </ul>

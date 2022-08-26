@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 
-class Driver extends Model
+class Truk extends Model
 {
     use HasFactory, HasFactory;
 
@@ -18,23 +18,19 @@ class Driver extends Model
      * @var array<int, string>
      */
 
-    protected $table = "tb_driver";
+    protected $table = "tb_truck";
     protected $fillable = [
-        'nama',
-        'avatar',
-        'tgl_lahir',
-        'alamat',
-        'agama',
-        'no_telpon'
+        'no_plat',
+        'img_truck',
+        'jenis_truck',
+        'merek_truck',
+        'tahun_buat',
+        'warna',
+        'dimensi',
+        'volume',
+        'beban_maks',
+        'driver'
     ];
 
-    // protected $dates = "tgl_lahir";
-
     public $timestamps = false;
-
-    public function getCreatedAtAttribute()
-    {
-        return Carbon::parse($this->attributes['tgl_lahir'])
-            ->format('l, d F Y');
-    }
 }

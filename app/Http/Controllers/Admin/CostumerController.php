@@ -42,7 +42,11 @@ class CostumerController extends Controller
 
     public function index(Request $request)
     {
-        $data = cost::all();
+        $data = DB::table('tb_costumer')
+            ->select('*')
+            ->leftJoin('tb_perusahaan_cost', 'tb_perusahaan_cost.id_perusahaan', '=', 'tb_costumer.perusahaan')
+            ->get();
+
         return view('admin.manage-user.costumer.index', compact(['data']))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
@@ -76,9 +80,41 @@ class CostumerController extends Controller
 
     public function show($id)
     {
-        $costu = cost::find($id);
+        // $costu = cost::find($id);
+
+        $costu = DB::table('tb_costumer')
+            ->select('*')
+            ->leftJoin('tb_perusahaan_cost', 'tb_perusahaan_cost.id_perusahaan', '=', 'tb_costumer.perusahaan')
+            ->where('tb_costumer.id', $id)
+            ->first();
+
+        // dd($costu);
 
         return response()->json(['cost' => $costu]);
+    }
+
+    public function updateStatus($id)
+    {
+        try {
+            $status = cost::findOrFail($id);
+
+            if ($status->status_user == 1) {
+                $status->status_user = 0;
+            } else {
+                $status->status_user = 1;
+            }
+            $status->save();
+
+            return redirect()->route('user.cost.index')
+                ->with('success', 'Status Costumer Berhasil diupdate');
+        } catch (\Throwable $th) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'error' => 'Status Costumer Gagal diupdate'
+                ]);
+        }
     }
 
     public function delete($id)

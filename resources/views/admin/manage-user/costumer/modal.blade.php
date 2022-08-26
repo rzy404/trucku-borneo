@@ -16,7 +16,7 @@
                                     <img id="profile_cost" src="">
                                     <div class="info d-flex align-items-center p-md-3 p-2 bg-primary">
                                         <div>
-                                            <p class="fs-14 text-white op5 mb-1" id="status_user">Belum Aktif</p>
+                                            <p class="fs-14 text-white op5 mb-1" id="status_user"></p>
                                             <span class="fs-18 text-white" id="namaLengkap"></span>
                                         </div>
                                     </div>

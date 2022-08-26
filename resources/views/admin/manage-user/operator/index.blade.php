@@ -137,7 +137,6 @@
                 $('#namaOperator').val(data.user.name);
                 $('#email').val(data.user.email);
                 $('#roles').val(data.userRole);
-                console.log(data.user.name);
             }
         });
     });
@@ -147,7 +146,6 @@
             e.preventDefault();
             var form = $(this).closest("form");
             var name = $(this).data("name");
-            console.log(name);
             swal({
                 title: 'Hapus',
                 text: "Apakah anda yakin ingin menghapus data ini ?",

@@ -53,18 +53,22 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if ($cost->perusahaan == NULL)
+                                    @if ($cost->nama_perusahaan == NULL)
                                     -
                                     @else
-                                    {{ $cost->perusahaan }}
+                                    {{ $cost->nama_perusahaan }}
                                     @endif
                                 </td>
                                 <td>
-                                    @if ($cost->status_user == 0)
-                                    <label class="badge light badge-danger">Belum Aktif</label>
-                                    @else if ($cost->status_user == 1)
-                                    <label class="badge light badge-info">Aktif</label>
-                                    @endif
+                                    <form action="{{ route('user.cost.update_status', $cost->id) }}" method="POST">
+                                        @csrf
+                                        @method('POST')
+                                        @if ($cost->status_user == 0)
+                                        <a id="status-costumer" name="status-costumer"><label class="badge light badge-danger">Belum Aktif</label></a>
+                                        @else
+                                        <a id="status-costumer" name="status-costumer"><label class="badge light badge-info">Aktif</label></a>
+                                        @endif
+                                    </form>
                                 </td>
                                 <td>
                                     <div class="d-flex">
@@ -105,7 +109,6 @@
             }
         });
 
-        console.log("ok");
         $.ajax({
             success: function() {
                 $("#titleCostumer").html("Add Costumer");
@@ -125,7 +128,6 @@
         });
         var id = $(this).data("id");
 
-        console.log(id);
         $.ajax({
             type: "GET",
             url: "{{ url('user/costumer/view/') }}" + '/' + id,
@@ -141,11 +143,17 @@
                 $("#profile_cost").attr("src", "{{ asset('images') }}" + "/" + data.cost.avatar);
                 $("#email_cost").attr("placeholder", data.cost.email);
                 $("#alamat_perusahaan").attr("placeholder", "-");
-                console.log(data);
-                if ($.trim(data.cost.perusahaan) == "") {
+
+                if (data.cost.status_user == "1") {
+                    $("#status_user").text("Aktif");
+                } else {
+                    $("#status_user").text("Belum Aktif");
+                }
+
+                if ($.trim(data.cost.nama_perusahaan) == "") {
                     $("#perusahaan").attr("placeholder", "-");
                 } else {
-                    $("#perusahaan").attr("placeholder", data.cost.perusahaan);
+                    $("#perusahaan").attr("placeholder", data.cost.nama_perusahaan);
                 }
 
                 if ($.trim(data.cost.no_telpon) === "") {
@@ -153,7 +161,16 @@
                 } else {
                     $("#no_telpon").attr("placeholder", data.cost.no_telpon);
                 }
-            }
+
+                if ($.trim(data.cost.alamat_perusahaan) === "") {
+                    $("#alamat_perusahaan").attr("placeholder", "-");
+                    console.log("ada")
+                } else {
+                    $("#alamat_perusahaan").attr("placeholder", data.cost.alamat_perusahaan);
+                    console.log("tidak")
+                }
+            },
+            error: function(msg) {}
         });
     });
 
@@ -174,6 +191,28 @@
                 }
             }))
         });
+    });
+
+    $(document).on("click", "#status-costumer", function() {
+        $.ajaxSetup({
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+            }
+        });
+
+        var form = $(this).closest("form");
+        swal({
+            title: 'Update Status',
+            text: "Apakah anda yakin ingin mengubah data ini ?",
+            icon: 'warning',
+            buttons: ["Batal", "Ya, Ubah"],
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+        }).then((result => {
+            if (result) {
+                form.submit();
+            }
+        }))
     });
 </script>
 @endsection

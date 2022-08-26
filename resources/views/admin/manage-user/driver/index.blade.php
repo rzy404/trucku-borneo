@@ -2,8 +2,9 @@
 @section('title', 'Management User - Driver Truck | TrucKu Borneo')
 @section('css')
 <!-- pick date -->
-<link href="{{ asset('vendor/pickadate/themes/default.css') }}" rel="stylesheet">
-<link href="{{ asset('vendor/pickadate/themes/default.date.css') }}" rel="stylesheet">
+<link href="{{ asset('vendor/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!-- <link href="{{ asset('vendor/pickadate/themes/default.date.css') }}" rel="stylesheet"> -->
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -33,28 +34,30 @@
                             <tr>
                                 <th>#</th>
                                 <th>Nama</th>
-                                <th>Tanggal Lahir</th>
+                                <th>Umur</th>
                                 <th>No Telpon</th>
                                 <th>Agama</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
+
                             @foreach ($data as $dr)
                             <tr>
                                 <td>{{ ++$i }}</td>
                                 <td>{{ $dr->nama }}</td>
-                                <td>{{ $dr->tgl_lahir }}</td>
+                                <td>{{ \Carbon\Carbon::parse($dr->tgl_lahir)->age }} Tahun</td>
                                 <td>{{ $dr->no_telpon }}</td>
                                 <td>{{ $dr->agama }}</td>
                                 <td>
                                     <div class="d-flex">
-                                        <a class="btn btn-info shadow btn-xs sharp mr-1" id="viewCostumer" data-id="{{ $dr->id }}" data-toggle="modal" data-target="#View_ModalCostumer"><i class="fa fa-eye"></i></a>
-                                        <form method="POST" action="{{ route('user.cost.delete', $dr->id) }}">
+                                        <a class="btn btn-info shadow btn-xs sharp mr-1" id="viewDriver" data-id="{{ $dr->id }}" data-toggle="modal" data-target="#View_ModalDriver"><i class="fa fa-eye"></i></a>
+                                        <a class="btn btn-primary shadow btn-xs sharp mr-1" id="editDriver" data-id="{{ $dr->id }}" data-toggle="modal" data-target="#ModalDriver"><i class="fa fa-pencil"></i></a>
+                                        <form method="POST" action="{{ route('user.driver.delete', $dr->id) }}">
                                             @csrf
                                             @method('DELETE')
                                             <input name="_method" type="hidden" value="DELETE">
-                                            <button type="submit" class="btn btn-danger shadow btn-xs sharp" id="deleteCostumer"><i class="fa fa-trash"></i></button>
+                                            <button type="submit" class="btn btn-danger shadow btn-xs sharp" id="deleteDriver"><i class="fa fa-trash"></i></button>
                                         </form>
                                     </div>
                                 </td>
@@ -86,21 +89,100 @@
             }
         });
 
-        console.log("ok");
         $.ajax({
             success: function() {
                 $("#titleDriver").html("Add Driver");
                 $("#ModalDriver").modal("show");
                 $("#formDriver").trigger("reset");
-                $("#btnModal").html("Save");
-                $("#formDriver").attr("action", '{{ route("user.cost.create") }}');
+                $("#formDriver").attr("action", '{{ route("user.driver.create") }}');
+                $('#btnModal').html("Save");
             }
         })
     });
+
+    $(document).on('click', '#editDriver', function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        var id = $(this).data('id');
+        var url2 = "{{ url('user/driver/update/') }}" + '/' + id;
+
+        $.ajax({
+            type: "GET",
+            url: "{{ url('user/driver/edit/') }}" + '/' + id,
+            data: {
+                id: id
+            },
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                $('#ModalDriver').modal('show');
+                $('#titleDriver').html("Edit Driver");
+                $('#formDriver').attr('action', url2);
+                $('#btnModal').html("Update");
+                $('#namaDriver').val(data.driver.nama);
+                $('#mdate').val(data.driver.tgl_lahir);
+                $('textarea#alamat').val(data.driver.alamat);
+                $('#agama option[value="' + data.driver.agama + '"]').val(data.driver.agama).attr('selected', 'selected');
+                $('#notel').val(data.driver.no_telpon);
+            }
+        });
+    });
+
+    $(document).on("click", "#viewDriver", function() {
+        $.ajaxSetup({
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+            }
+        });
+        var id = $(this).data("id");
+
+        $.ajax({
+            type: "GET",
+            url: "{{ url('user/driver/view/') }}" + '/' + id,
+            data: {
+                id: id
+            },
+            dataType: "json",
+            cache: false,
+            success: function(data) {
+                console.log(data.format_tgl);
+                $("#View_ModalDriver").modal("show");
+                $("#namaLengkap").text(data.driver.nama);
+                $("#profileDriver").attr("src", "{{ asset('images') }}" + "/" + data.driver.avatar);
+                $("#no_telpon").attr("placeholder", data.driver.no_telpon);
+                $("#agama").attr("placeholder", data.driver.agama);
+                $("#alamat").attr("placeholder", data.driver.alamat);
+                $("p#umur_driver").text(data.umur + " Tahun");
+                $("#tgl_lahir").attr("placeholder", data.format_tgl);
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        $('body').on('click', '#deleteDriver', function(e) {
+            e.preventDefault();
+            var form = $(this).closest("form");
+            var name = $(this).data("name");
+            console.log(name);
+            swal({
+                title: 'Hapus',
+                text: "Apakah anda yakin ingin menghapus data ini ?",
+                icon: 'warning',
+                buttons: ["Batal", "Ya, Hapus"],
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            }).then((result => {
+                if (result) {
+                    form.submit();
+                }
+            }))
+        });
+    });
 </script>
 <!-- pick date -->
-<script src="{{ asset('vendor/pickadate/picker.js') }}"></script>
-<script src="{{ asset('vendor/pickadate/picker.time.js') }}"></script>
-<script src="{{ asset('vendor/pickadate/picker.date.js') }}"></script>
-<script src="{{ asset('js/plugins-init/pickadate-init.js') }}"></script>
+<script src="{{ asset('vendor/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+<script src="{{ asset('js/plugins-init/material-date-picker-init.js') }}"></script>
 @endsection
