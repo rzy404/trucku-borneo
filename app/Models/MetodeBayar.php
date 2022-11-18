@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 
-class Truk extends Model
+class MetodeBayar extends Model
 {
     use HasFactory, HasFactory;
 
@@ -18,15 +18,12 @@ class Truk extends Model
      * @var array<int, string>
      */
 
-    protected $table = "tb_truk";
+    protected $table = "tb_pembayaran";
     protected $fillable = [
-        'no_plat',
-        'img_truck',
-        'jenis_truk',
-        'merek_truck',
-        'tahun_buat',
-        'warna',
-        'driver'
+        'metode_bayar',
+        'norek',
+        'logo',
+        'atas_nama'
     ];
 
     public $timestamps = false;

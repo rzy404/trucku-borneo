@@ -23,8 +23,8 @@
                 <span class="nav-text">Master Data</span>
             </a>
             <ul aria-expanded="false">
-                <li><a href="{{ route('truk.index')}}">Truck</a></li>
-                <li><a href="javascript:void()">Metode Pembayaran</a></li>
+                <li><a href="{{ route('truk.index') }}">Truck</a></li>
+                <li><a href="{{ route('metodepb.index') }}">Metode Pembayaran</a></li>
                 <li><a href="javascript:void()">Transaksi</a></li>
             </ul>
         </li>
@@ -43,8 +43,8 @@
                 <span class="nav-text">Proses Metode Electre</span>
             </a>
             <ul aria-expanded="false">
-                <li><a href="javascript:void()">Kriteria</a></li>
-                <li><a href="javascript:void()">Alternatif</a></li>
+                <li><a href="{{ route('kriteria.index') }}">Kriteria</a></li>
+                <li><a href="{{ route('alternatif.index') }}">Alternatif</a></li>
                 <li><a href="javascript:void()">Hasil Metode</a></li>
             </ul>
         </li>

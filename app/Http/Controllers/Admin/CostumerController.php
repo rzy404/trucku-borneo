@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use App\Models\Costumer as cost;
 use DB;
 use Hash;
-use Carbon\Carbon;
 use RealRashid\SweetAlert\Facades\Alert;
 
 
@@ -55,7 +53,7 @@ class CostumerController extends Controller
     {
         $this->validate($request, [
             'nama' => 'required',
-            'email' => 'required|email|unique:tb_user,email',
+            'email' => 'required|email|unique:tb_costumer,email',
             'password' => 'required|same:confirm-password',
         ]);
 
@@ -80,20 +78,16 @@ class CostumerController extends Controller
 
     public function show($id)
     {
-        // $costu = cost::find($id);
-
         $costu = DB::table('tb_costumer')
             ->select('*')
             ->leftJoin('tb_perusahaan_cost', 'tb_perusahaan_cost.id_perusahaan', '=', 'tb_costumer.perusahaan')
             ->where('tb_costumer.id', $id)
             ->first();
 
-        // dd($costu);
-
         return response()->json(['cost' => $costu]);
     }
 
-    public function updateStatus($id)
+    public function updateStatus(Request $request, $id)
     {
         try {
             $status = cost::findOrFail($id);

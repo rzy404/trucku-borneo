@@ -62,7 +62,6 @@
                                 <td>
                                     <form action="{{ route('user.cost.update_status', $cost->id) }}" method="POST">
                                         @csrf
-                                        @method('POST')
                                         @if ($cost->status_user == 0)
                                         <a id="status-costumer" name="status-costumer"><label class="badge light badge-danger">Belum Aktif</label></a>
                                         @else

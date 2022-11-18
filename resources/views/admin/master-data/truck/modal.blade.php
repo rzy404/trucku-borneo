@@ -85,7 +85,48 @@
     </div>
 </div>
 
-<!-- modal form driver -->
+<div class="modal fade" id="View_ModalJenis">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="jenisTruk">
+                        <tr>
+                            <td width="30%" class="namaJenis"></td>
+                            <td width="50%" class="dataJenis"></td>
+                        </tr>
+                        <tr>
+                            <td width="30%" class="namaDimensi"></td>
+                            <td width="50%" class="dataDimensi"></td>
+                        </tr>
+                        <tr>
+                            <td width="30%" class="namaVolume"></td>
+                            <td width="50%" class="dataVolume"></td>
+                        </tr>
+                        <tr>
+                            <td width="30%" class="namaBeban"></td>
+                            <td width="50%" class="dataBeban"></td>
+                        </tr>
+                        <tr>
+                            <td width="30%" class="namaBiaya"></td>
+                            <td width="50%" class="dataBiaya"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal form truk -->
 <div class="modal fade" id="ModalTruk">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -110,10 +151,14 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Jenis Truck</label>
                             <div class="col-sm-9">
-                                {!! Form::text('jenis_truck', null, array('id' => 'jenis_truck', 'placeholder' => 'Jenis Truck','class' => 'form-control')) !!}
-                                @if ($errors->has('jenis_truck'))
-                                <span class="text-danger">{{ $errors->first('jenis_truck') }}</span>
-                                @endif
+                                <select class="form-control default-select'" name="jenis_truk" id="jenis_truk">
+                                    <option selected disabled>Pilih Jenis Truck</option>
+                                    @foreach ($data_jenisTruk as $key => $value)
+                                    <option value="{{ $value->id }}">
+                                        {{ $value->jenis_truk }}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -140,6 +185,50 @@
                                 {!! Form::text('warna', null, array('id' => 'wr', 'placeholder' => 'Warna','class' => 'form-control')) !!}
                                 @if ($errors->has('warna'))
                                 <span class="text-danger">{{ $errors->first('warna') }}</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Foto</label>
+                            <div class="custom-file col-sm-8 ml-3">
+                                <input type="file" id="img_truck" name="img_truck" class="custom-file-input">
+                                <label class="custom-file-label">Pilih Gambar</label>
+                                <img src="" class="img-fluid w-100" alt="" id="file-image-edit">
+                                @if ($errors->has('img_truck'))
+                                <span class="text-danger">{{ $errors->first('img_truck') }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="btnModal">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- modal form jenis truk -->
+<div class="modal fade" id="ModalJenisTruk">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titleJenis"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span>
+                </button>
+            </div>
+            <form method="POST" id="formJenis" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="basic-form">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Jenis Truck</label>
+                            <div class="col-sm-9">
+                                {!! Form::text('jenis_truk', null, array('id' => 'jenis_truk', 'placeholder' => 'Jenis Truck ("JBORNEO_XX")','class' => 'form-control')) !!}
+                                @if ($errors->has('jenis_truk'))
+                                <span class="text-danger">{{ $errors->first('jenis_truk') }}</span>
                                 @endif
                             </div>
                         </div>
@@ -171,13 +260,11 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Foto</label>
-                            <div class="custom-file col-sm-8 ml-3">
-                                <input type="file" id="img_truck" name="img_truck" class="custom-file-input">
-                                <label class="custom-file-label">Pilih Gambar</label>
-                                <img src="" class="img-fluid w-100" alt="" id="file-image-edit">
-                                @if ($errors->has('img_truck'))
-                                <span class="text-danger">{{ $errors->first('img_truck') }}</span>
+                            <label class="col-sm-3 col-form-label">Biaya (Rp)</label>
+                            <div class="col-sm-9">
+                                {!! Form::text('biaya', null, array('id' => 'biaya', 'placeholder' => 'Biaya','class' => 'form-control')) !!}
+                                @if ($errors->has('biaya'))
+                                <span class="text-danger">{{ $errors->first('biaya') }}</span>
                                 @endif
                             </div>
                         </div>

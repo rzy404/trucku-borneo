@@ -5,8 +5,7 @@
     <div class="form-head d-flex align-items-center mb-sm-4 mb-3">
         <div class="mr-auto">
             <h2 class="text-black font-w600">Dashboard</h2>
-            <p class="mb-0">TrucKu Borneo Admin Dashboard</p>
-            <p class="mb-0">{{ Auth::user()->name }}</p>
+            <p class="mb-0">Hai &#128075;&#127996;, {{ Auth::user()->name }}</p>
         </div>
     </div>
     <div class="row">
@@ -44,7 +43,7 @@
                 <div class="progress  rounded-0" style="height:4px;">
                     <div class="progress-bar rounded-0 bg-secondary progress-animated" style="width: 50%; height:4px;"
                         role="progressbar">
-                        <span class="sr-only">50% Complete</span>
+                        <span class="sr-only">90% Complete</span>
                     </div>
                 </div>
             </div>

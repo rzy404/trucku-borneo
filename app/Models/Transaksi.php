@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 
-class Truk extends Model
+class Transaksi extends Model
 {
     use HasFactory, HasFactory;
 
@@ -18,15 +16,18 @@ class Truk extends Model
      * @var array<int, string>
      */
 
-    protected $table = "tb_truk";
+    protected $table = "tb_transaksi";
     protected $fillable = [
-        'no_plat',
-        'img_truck',
-        'jenis_truk',
-        'merek_truck',
-        'tahun_buat',
-        'warna',
-        'driver'
+        'truk',
+        'perusahaan',
+        'alamat_asal',
+        'alamat_tujuan',
+        'jumlah_muatan',
+        'tgl_pengambilan',
+        'tgl_pengembalian',
+        'total_biaya',
+        'status_penyewaan',
+        'bukti_bayar'
     ];
 
     public $timestamps = false;

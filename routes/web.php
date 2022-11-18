@@ -9,9 +9,8 @@ use App\Http\Controllers\Admin\OperatorController as Operator;
 use App\Http\Controllers\Admin\CostumerController as Costu;
 use App\Http\Controllers\Admin\SopirController as Driver;
 use App\Http\Controllers\Admin\TruckController as truk;
-// use App\Http\Controllers\RoleController;
-// use App\Http\Controllers\UserController;
-// use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Admin\MetodeBayarController as mbayar;
+use App\Http\Controllers\Admin\ConfigDataElectre as config;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,29 +72,43 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
 Route::prefix('data-truck')->name('truk.')->middleware('auth')->group(function () {
     Route::get('/', [truk::class, 'index'])->name('index');
     Route::post('/create', [truk::class, 'store'])->name('create');
+    Route::post('/create_jenis', [truk::class, 'storeJenis'])->name('create_jenisTruk');
     Route::get('/edit/{id}', [truk::class, 'edit'])->name('edit');
     Route::post('/update/{id}', [truk::class, 'update'])->name('update');
     Route::get('/view/{id}', [truk::class, 'show'])->name('view');
-    // Route::post('/update-driver/truk?={id_truk}&driver?={id_driver}', [truk::class, 'updateDriver'])->name('update-driver');
-    Route::post('/update-driver/{id_truk}/{id_driver}', [truk::class, 'updateDriver'])->name('update-driver');
+    Route::get('/view/jenis/{id}', [truk::class, 'showJenis'])->name('viewJenis');
+    Route::post('/update-driver/{id_truk}', [truk::class, 'updateDriver'])->name('updateDriver');
     Route::delete('/delete/{id}', [truk::class, 'delete'])->name('delete');
+    Route::delete('/delete-jenis/{id}', [truk::class, 'deleteJenisTruk'])->name('deleteJenisTruk');
 });
 
 // route metode-pembayaran
 Route::prefix('metode-pembayaran')->name('metodepb.')->middleware('auth')->group(function () {
+    Route::get('/', [mbayar::class, 'index'])->name('index');
+    Route::post('/create', [mbayar::class, 'store'])->name('create');
+    Route::get('/edit/{id}', [mbayar::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [mbayar::class, 'update'])->name('update');
+    Route::delete('/delete/{id}', [mbayar::class, 'delete'])->name('delete');
 });
 
 // route transaksi
 Route::prefix('transaksi')->name('transaksi.')->middleware('auth')->group(function () {
 });
 
-// Route::group(['middleware' => ['auth']], function () {
-//     Route::resource('roles', RoleController::class);
-//     Route::resource('users', UserController::class);
-//     Route::resource('products', ProductController::class);
-// });
+Route::middleware('auth')->group(function () {
+    Route::prefix('kriteria')->name('kriteria.')->group(function () {
+        Route::get('/', [config::class, 'KriteriaIndex'])->name('index');
+        Route::post('/create', [config::class, 'KriteriaStore'])->name('create');
+        Route::get('/edit/{id}', [config::class, 'KriteriaEdit'])->name('edit');
+        Route::post('/update/{id}', [config::class, 'KriteriaUpdate'])->name('update');
+        Route::delete('/delete/{id}', [config::class, 'KriteriaDelete'])->name('delete');
+    });
 
-    // Route::group(['middleware' => ['auth']], function () {
-    //     Route::resource('roles', RoleController::class);
-    //     Route::resource('users', UserController::class);
-    // });
+    Route::prefix('alternatif')->name('alternatif.')->group(function () {
+        Route::get('/', [config::class, 'AlternatifIndex'])->name('index');
+        Route::post('/create', [config::class, 'AlternatifStore'])->name('create');
+        Route::get('/edit/{id}', [config::class, 'AlternatifEdit'])->name('edit');
+        Route::post('/update/{id}', [config::class, 'AlternatifUpdate'])->name('update');
+        Route::delete('/delete/{id}', [config::class, 'AlternatifDelete'])->name('delete');
+    });
+});

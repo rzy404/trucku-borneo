@@ -2,7 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\AuthController as Cust;
+use App\Http\Controllers\API\AuthController as Auth;
+use App\Http\Controllers\API\HomeController as Home;
+use App\Http\Controllers\API\ProfileController as Profile;
+use App\Http\Controllers\API\TransaksiController as transaksi;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,27 +18,24 @@ use App\Http\Controllers\API\AuthController as Cust;
 |
 */
 
-Route::post('/login', [Cust::class, 'login']);
-
-// Route::resource('/data-aja', Cust::class);
-
-// Route::get('/data', [Cust::class, 'index']);
-// Route::get('/test', function () {
-//     return "test";
-// });
-
-// Route::group(['middleware' => ['auth:sanctum']], function () {
-// });
+Route::post('register', [Auth::class, 'register']);
+Route::post('login', [Auth::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    // Route::get('/profile', function (Request $request) {
-    //     return auth()->user();
-    // });
+    Route::post('/logout', [Auth::class, 'logout']);
 
-    Route::get('/test', function () {
-        return "test";
-    });
+    //route profile
+    Route::get('/detail-profile', [Home::class, 'GetProfile']);
+    Route::post('/update-profile', [Home::class, 'UpdateProfile']);
+    Route::post('/change-password', [Home::class, 'ChangePassword']);
+    Route::post('/change-avatar', [Home::class, 'ChangeAvatar']);
+    Route::post('/update-perusahaan', [profile::class, 'perusahaanStore']);
 
-    // API route for logout user
-    Route::post('/logout', [Cust::class, 'logout']);
+    //route truck
+    Route::get('/truck', [Home::class, 'GetTruck']);
+
+    //route transaksi
+    Route::post('/transaksi/{perusahaan}', [transaksi::class, 'transaksiStore']);
+
+    Route::post('/test/{perusahaan}', [transaksi::class, 'test']);
 });

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use DB;
 use App\Models\Truk as truk;
+use App\Models\JenisTruk as jenis;
 use App\Models\Driver;
 use Carbon\Carbon;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -42,15 +43,25 @@ class TruckController extends Controller
 
     public function index(Request $request)
     {
-        $data = DB::table('tb_truck')
-            ->select('tb_truck.*', 'tb_driver.nama as nama_driver')
-            ->leftJoin('tb_driver', 'tb_driver.id', '=', 'tb_truck.driver')
+        $data = DB::table('tb_truk')
+            ->select(
+                'tb_truk.*',
+                'tb_jenis_truk.jenis_truk',
+                'tb_jenis_truk.dimensi',
+                'tb_jenis_truk.volume',
+                'tb_jenis_truk.beban_maks',
+                'tb_jenis_truk.biaya',
+                'tb_driver.nama as nama_driver'
+            )
+            ->leftJoin('tb_jenis_truk', 'tb_jenis_truk.id', '=', 'tb_truk.jenis_truk')
+            ->leftJoin('tb_driver', 'tb_driver.id', '=', 'tb_truk.driver')
             ->get();
-
         $data_driver = Driver::all();
+        $data_jenisTruk = jenis::all();
 
-        return view('admin.master-data.truck.index', compact(['data', 'data_driver']))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        return view('admin.master-data.truck.index', compact(['data', 'data_driver', 'data_jenisTruk']))
+            ->with('i', ($request->input('page', 1) - 1) * 5)
+            ->with('s', ($request->input('page', 1) - 1) * 5);
     }
 
     public function store(Request $request)
@@ -58,13 +69,10 @@ class TruckController extends Controller
         try {
             $this->validate($request, [
                 'no_plat' => 'required',
-                'jenis_truck' => 'required',
+                'jenis_truk' => 'required',
                 'merek_truck' => 'required',
                 'tahun_buat' => 'required|min:0|max:4',
                 'warna' => 'required',
-                'dimensi' => 'required',
-                'volume' => 'required',
-                'beban_maks' => 'required',
                 'img_truck' => 'required|max:10240',
             ]);
 
@@ -76,7 +84,7 @@ class TruckController extends Controller
                 $img_truck = $request->file('img_truck');
                 $ext = $img_truck->getClientOriginalExtension();
                 $filename = now()->timestamp . ".{$request->img_truck->getClientOriginalName()}";
-                Image::make($img_truck)->resize(500, 500)->save(public_path('/images/' . $filename));
+                Image::make($img_truck)->resize(450, 300)->save(public_path('/images/' . $filename));
 
                 $check = in_array($ext, $allowExtension);
 
@@ -94,16 +102,47 @@ class TruckController extends Controller
         } catch (\Throwable $th) {
             return redirect()
                 ->back()
-                ->withInput()
-                ->withErrors([
-                    'error' => 'Truk Gagal ditambahkan'
-                ]);
+                ->withError('Truk Gagal ditambahkan')
+                ->withInput();
+        }
+    }
+
+    public function storeJenis(Request $request)
+    {
+        try {
+            $this->validate($request, [
+                'jenis_truk' => 'required|regex:(JBORNEO)',
+                'dimensi' => 'required',
+                'volume' => 'required',
+                'beban_maks' => 'required',
+                'biaya' => 'required|min:0|max:20',
+            ]);
+
+            $input = $request->all();
+            jenis::create($input);
+
+            return redirect()->route('truk.index')
+                ->with('success', 'Jenis Truk Berhasil ditambahkan');
+        } catch (\Throwable $th) {
+            return redirect()
+                ->back()
+                ->withError('Jenis Truk Gagal ditambahkan')
+                ->withInput();
         }
     }
 
     public function edit($id)
     {
-        $truk = truk::find($id);
+        $truk = DB::table('tb_truk')
+            ->select(
+                'tb_truk.*',
+                'tb_jenis_truk.jenis_truk as nama_jenis',
+                'tb_driver.nama as nama_driver'
+            )
+            ->leftJoin('tb_jenis_truk', 'tb_jenis_truk.id', '=', 'tb_truk.jenis_truk')
+            ->leftJoin('tb_driver', 'tb_driver.id', '=', 'tb_truk.driver')
+            ->where('tb_truk.id', $id)
+            ->first();
 
         return response()->json(['truk' => $truk]);
     }
@@ -112,13 +151,9 @@ class TruckController extends Controller
     {
         $this->validate($request, [
             'no_plat' => 'required',
-            'jenis_truck' => 'required',
-            'merek_truck' => 'required',
+            'jenis_truk' => 'required',
             'tahun_buat' => 'required|min:0|max:4',
             'warna' => 'required',
-            'dimensi' => 'required',
-            'volume' => 'required',
-            'beban_maks' => 'required',
             'img_truck' => 'required_without|max:10240',
         ]);
 
@@ -166,33 +201,44 @@ class TruckController extends Controller
 
     public function show($id)
     {
-        $truk = DB::table('tb_truck')
-            ->select('tb_truck.*', 'tb_driver.nama as nama_driver')
-            ->leftJoin('tb_driver', 'tb_driver.id', '=', 'tb_truck.driver')
-            ->where('tb_truck.id', $id)
+        $truk = DB::table('tb_truk')
+            ->select(
+                'tb_truk.*',
+                'tb_jenis_truk.jenis_truk',
+                'tb_jenis_truk.dimensi',
+                'tb_jenis_truk.volume',
+                'tb_jenis_truk.beban_maks',
+                'tb_driver.nama as nama_driver'
+            )
+            ->leftJoin('tb_jenis_truk', 'tb_jenis_truk.id', '=', 'tb_truk.jenis_truk')
+            ->leftJoin('tb_driver', 'tb_driver.id', '=', 'tb_truk.driver')
+            ->where('tb_truk.id', $id)
             ->first();
         return response()->json(['truk' => $truk]);
     }
 
-    public function updateDriver($id_truk, $id_driver)
+    public function showJenis($id)
+    {
+        $jenis = jenis::find($id);
+        return response()->json([
+            'jenis' => $jenis
+        ]);
+    }
+
+    public function updateDriver(Request $request,  $id_truk)
     {
         try {
-            DB::beginTransaction();
+            $id_driver = $request->input('driver');
 
-            DB::table('tb_truck')
-                ->where('tb_truck.id', $id_truk)
-                ->update(['driver' => $id_driver]);
+            truk::where('id', $id_truk)->update(['driver' => $id_driver]);
 
-            DB::commit();
             return redirect()->route('truk.index')
                 ->with('success', 'Driver Truk Berhasil diupdate');
         } catch (\Throwable $th) {
             return redirect()
                 ->back()
-                ->withInput()
-                ->withErrors([
-                    'error' => 'Driver Gagal diupdate'
-                ]);
+                ->withError('Driver Truk Gagal diupdate')
+                ->withInput();
         }
     }
 
@@ -213,5 +259,21 @@ class TruckController extends Controller
 
         return redirect()->route('truk.index')
             ->with('success', 'Data Berhasil dihapus');
+    }
+
+    public function deleteJenisTruk($id)
+    {
+        try {
+            $data = jenis::find($id);
+            $data->delete();
+
+            return redirect()->route('truk.index')
+                ->with('success', 'Data Berhasil dihapus');
+        } catch (\Throwable $th) {
+            return redirect()
+                ->back()
+                ->withError('Jenis Truk Gagal dihapus')
+                ->withInput();
+        }
     }
 }
