@@ -125,8 +125,15 @@ class ConfigDataElectre extends Controller
     {
         $dataAlternatif = alternatif::all();
         $dataKriteria = configElectre::all();
+        $dataNilaiAwal = configElectre::getTransaksiAlternatif();
 
-        return view('admin.master-data.alternatif.index', compact(['dataAlternatif', 'dataKriteria']))
+        return view('admin.master-data.alternatif.index', compact(
+            [
+                'dataAlternatif',
+                'dataKriteria',
+                'dataNilaiAwal'
+            ]
+        ))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 }

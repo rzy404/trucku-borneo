@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\SopirController as Driver;
 use App\Http\Controllers\Admin\TruckController as truk;
 use App\Http\Controllers\Admin\MetodeBayarController as mbayar;
 use App\Http\Controllers\Admin\ConfigDataElectre as config;
+use App\Http\Controllers\Admin\AlgoritmaElectre as electre;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,5 +111,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}', [config::class, 'AlternatifEdit'])->name('edit');
         Route::post('/update/{id}', [config::class, 'AlternatifUpdate'])->name('update');
         Route::delete('/delete/{id}', [config::class, 'AlternatifDelete'])->name('delete');
+    });
+
+    Route::prefix('electre')->name('electre.')->group(function () {
+        Route::get('/', [electre::class, 'Index'])->name('index');
     });
 });

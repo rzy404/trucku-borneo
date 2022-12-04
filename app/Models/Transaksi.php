@@ -17,6 +17,7 @@ class Transaksi extends Model
      */
 
     protected $table = "tb_transaksi";
+    protected $primaryKey = "id";
     protected $fillable = [
         'truk',
         'perusahaan',

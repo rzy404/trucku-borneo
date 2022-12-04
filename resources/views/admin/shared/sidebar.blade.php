@@ -28,7 +28,7 @@
                 <li><a href="javascript:void()">Transaksi</a></li>
             </ul>
         </li>
-        <li>
+        {{-- <li>
             <a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
                 <i class="flaticon-381-notepad"></i>
                 <span class="nav-text">Master Laporan</span>
@@ -36,7 +36,7 @@
             <ul aria-expanded="false">
                 <li><a href="javascript:void()">Transaksi</a></li>
             </ul>
-        </li>
+        </li> --}}
         <li>
             <a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
                 <i class="flaticon-381-settings-2"></i>
@@ -45,7 +45,7 @@
             <ul aria-expanded="false">
                 <li><a href="{{ route('kriteria.index') }}">Kriteria</a></li>
                 <li><a href="{{ route('alternatif.index') }}">Alternatif</a></li>
-                <li><a href="javascript:void()">Hasil Metode</a></li>
+                <li><a href="{{ route('electre.index') }}">Hasil Metode</a></li>
             </ul>
         </li>
     </ul>

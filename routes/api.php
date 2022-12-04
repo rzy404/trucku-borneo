@@ -29,13 +29,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/update-profile', [Home::class, 'UpdateProfile']);
     Route::post('/change-password', [Home::class, 'ChangePassword']);
     Route::post('/change-avatar', [Home::class, 'ChangeAvatar']);
-    Route::post('/update-perusahaan', [profile::class, 'perusahaanStore']);
+    Route::post('/update-perusahaan/{id}', [profile::class, 'updatePerusahaan']);
 
     //route truck
     Route::get('/truck', [Home::class, 'GetTruck']);
 
     //route transaksi
-    Route::post('/transaksi/{perusahaan}', [transaksi::class, 'transaksiStore']);
-
-    Route::post('/test/{perusahaan}', [transaksi::class, 'test']);
+    Route::post('/transaksi/{perusahaan}/{jenis_truk}', [transaksi::class, 'transaksi']);
 });

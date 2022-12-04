@@ -8,47 +8,97 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Electre as kriteria;
+use App\Models\Transaksi as transaksi;
 
 class TransaksiController extends Controller
 {
-    public function transaksiStore(Request $request, $perusahaan)
+    public function transaksi(Request $request, $perusahaan, $jenis_truk)
     {
-        $this->test($request, $perusahaan);
+        Validator::make($request->all(), [
+            'alamat_asal' => 'required',
+            'alamat_tujuan' => 'required',
+            'jumlah_muatan' => 'required',
+            'tgl_pengambilan' => 'required|date',
+            'tgl_pengembalian' => 'required|date',
+            'total_biaya' => 'required|numeric',
+            'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ])->validate();
+
+        $dataTransaksi = [
+            'truk' => $jenis_truk,
+            'perusahaan' => $perusahaan,
+            'alamat_asal' => $request->alamat_asal,
+            'alamat_tujuan' => $request->alamat_tujuan,
+            'jumlah_muatan' => $request->jumlah_muatan,
+            'tgl_pengambilan' => $request->tgl_pengambilan,
+            'tgl_pengembalian' => $request->tgl_pengembalian,
+            'total_biaya' => $request->total_biaya,
+            'bukti_bayar' => $request->bukti_bayar,
+        ];
+
+        $transaksi = transaksi::create($dataTransaksi);
+        if ($request->hasFile('bukti_bayar')) {
+            $file = $request->file('bukti_bayar');
+            $fileName = $transaksi->id . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('bukti_bayar'), $fileName);
+            $transaksi->bukti_bayar = $fileName;
+            $transaksi->save();
+        }
+
+        $test = $this->HitungNilaiAlternatif(
+            $request,
+            $perusahaan,
+            $dataTransaksi['jumlah_muatan'],
+            $dataTransaksi['tgl_pengambilan'],
+            $dataTransaksi['tgl_pengembalian'],
+            $dataTransaksi['total_biaya']
+        );
+
         return response()->json([
-            'success' => true,
             'message' => 'success',
-            'data' => $request->all()
+            'data' => $dataTransaksi,
         ], 200);
     }
 
-    private function test(Request $request, $perusahaan)
+    private function HitungJarak($jarak_tempuh)
     {
-        $validator = Validator::make($request->all(), [
-            'jarak_tempuh' => 'required|string',
-            'jumlah_muatan' => 'required|string',
+        $jarak_tempuh = 20;
+        return $jarak_tempuh;
+    }
+
+    private function HitungNilaiAlternatif(Request $request, $perusahaan)
+    {
+        Validator::make($request->all(), [
+            'jarak_tempuh' => 'required',
+            'jumlah_muatan' => 'required',
+            'tgl_pengambilan' => 'required|date',
+            'tgl_pengembalian' => 'required|date',
+            'total_biaya' => 'required|numeric',
         ]);
 
-        $tgl1 = date_create("2022-11-16");
-        $tgl2 = date_create("2022-12-8");
+        $input = [
+            'jarak_tempuh' => $this->HitungJarak($request->jarak_tempuh),
+            'jumlah_muatan' => $request->jumlah_muatan,
+            'tgl_pengambilan' => $request->tgl_pengambilan,
+            'tgl_pengembalian' => $request->tgl_pengembalian,
+            'total_biaya' => $request->total_biaya,
+        ];
+
+        $tgl1 = date_create($input['tgl_pengambilan']);
+        $tgl2 = date_create($input['tgl_pengembalian']);
         $diff  = date_diff($tgl1, $tgl2);
         $hari = $diff->days;
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
-        }
-        $biaya = "9000000";
-        $total = $biaya * $request->jarak_tempuh;
-
         $data = [
             'perusahaan' => $perusahaan,
-            'jarak_tempuh' => $request->jarak_tempuh,
+            'jarak_tempuh' => $this->HitungJarak($request->jarak_tempuh),
             'jumlah_muatan' => $request->jumlah_muatan,
-            'total_biaya' => $total,
+            'total_biaya' => $request->total_biaya,
             'lama_sewa' => $hari,
             'kriteria' => $request->kriteria,
         ];
 
-        $query = DB::table('tb_transaksi_detail_alternatif')->insert([
+        DB::table('tb_transaksi_detail_alternatif')->insert([
             'perusahaan' => $data['perusahaan'],
             'jarak_tempuh' => $data['jarak_tempuh'],
             'jumlah_muatan' => $data['jumlah_muatan'],
@@ -104,5 +154,6 @@ class TransaksiController extends Controller
                 ]
             );
         }
+        return $savedata;
     }
 }
