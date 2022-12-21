@@ -27,8 +27,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     //route profile
     Route::get('/detail-profile', [Home::class, 'GetProfile']);
     Route::post('/update-profile', [Home::class, 'UpdateProfile']);
-    Route::post('/change-password', [Home::class, 'ChangePassword']);
-    Route::post('/change-avatar', [Home::class, 'ChangeAvatar']);
+    Route::post('/change-password', [Profile::class, 'changePassword']);
+    Route::post('/change-avatar', [Profile::class, 'changeAvatar']);
     Route::post('/update-perusahaan/{id}', [profile::class, 'updatePerusahaan']);
 
     //route truck

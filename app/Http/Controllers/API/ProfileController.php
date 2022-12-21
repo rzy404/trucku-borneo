@@ -5,12 +5,75 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Perusahaan as perusahaan;
 use App\Models\Costumer as costumer;
 use Haruncpi\LaravelIdGenerator\IdGenerator as genKode;
 
 class ProfileController extends Controller
 {
+    public function changePassword(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'old_password' => 'required|string|min:8',
+                'new_password' => 'required|string|min:8|different:old_password',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors());
+            }
+
+            $user = costumer::findOrfail(Auth::user()->id);
+            $user->password = bcrypt($request->get('new_password'));
+            $user->save();
+
+            return response()->json([
+                'message' => 'Password berhasil diubah',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function changeAvatar(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors());
+            }
+
+            $user = costumer::findOrfail(Auth::user()->id);
+            $avatarName = $user->id_costumer . '_avatar' . time() . '.' . $request->avatar->extension();
+            if ($user->avatar != 'default.png') {
+                $oldAvatar = public_path('images/' . $user->avatar);
+                $request->avatar->move(public_path('images/'), $avatarName);
+                $user->avatar = $avatarName;
+                if (file_exists($oldAvatar)) {
+                    @unlink($oldAvatar);
+                }
+            } else {
+                $request->avatar->move(public_path('images/'), $avatarName);
+                $user->avatar = $avatarName;
+            }
+            $user->save();
+
+            return response()->json([
+                'message' => 'Avatar berhasil diubah',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
     public function updatePerusahaan(Request $request, $id)
     {
         try {
