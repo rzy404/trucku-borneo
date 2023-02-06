@@ -7,6 +7,7 @@ use App\Models\Costumer as costumer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -42,7 +43,11 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        $costumer = costumer::where('email', $request->email)->first();
+        $costumer = Costumer::where('email', $request->email)
+            ->leftJoin('tb_perusahaan_cost', 'tb_perusahaan_cost.id_perusahaan', '=', 'tb_costumer.perusahaan')
+            ->first();
+
+
         if (!$costumer || !Hash::check($request->password, $costumer->password)) {
             return response()->json([
                 'success' => false,

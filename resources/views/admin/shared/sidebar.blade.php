@@ -25,18 +25,9 @@
             <ul aria-expanded="false">
                 <li><a href="{{ route('truk.index') }}">Truck</a></li>
                 <li><a href="{{ route('metodepb.index') }}">Metode Pembayaran</a></li>
-                <li><a href="javascript:void()">Transaksi</a></li>
+                <li><a href="{{ route('transaksi.index') }}">Transaksi</a></li>
             </ul>
         </li>
-        {{-- <li>
-            <a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
-                <i class="flaticon-381-notepad"></i>
-                <span class="nav-text">Master Laporan</span>
-            </a>
-            <ul aria-expanded="false">
-                <li><a href="javascript:void()">Transaksi</a></li>
-            </ul>
-        </li> --}}
         <li>
             <a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
                 <i class="flaticon-381-settings-2"></i>

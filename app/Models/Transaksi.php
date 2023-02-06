@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 
 class Transaksi extends Model
@@ -19,6 +20,7 @@ class Transaksi extends Model
     protected $table = "tb_transaksi";
     protected $primaryKey = "id";
     protected $fillable = [
+        'id',
         'truk',
         'perusahaan',
         'alamat_asal',

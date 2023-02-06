@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Image;
@@ -51,7 +50,7 @@ class MetodeBayarController extends Controller
         try {
             $this->validate($request, [
                 'metode_bayar' => 'required',
-                'norek' => 'required|digits_between:5,25',
+                'norek' => 'required|numeric',
                 'atas_nama' => 'required',
                 'logo' => 'required|max:10240',
             ]);
@@ -64,7 +63,7 @@ class MetodeBayarController extends Controller
                 $logo_bayar = $request->file('logo');
                 $ext = $logo_bayar->getClientOriginalExtension();
                 $filename = now()->timestamp . ".{$request->logo->getClientOriginalName()}";
-                Image::make($logo_bayar)->resize(500, 300)->save(public_path('/images/' . $filename));
+                Image::make($logo_bayar)->save(public_path('/images/' . $filename));
 
                 $check = in_array($ext, $allowExtension);
 
@@ -100,7 +99,7 @@ class MetodeBayarController extends Controller
     {
         $this->validate($request, [
             'metode_bayar' => 'required',
-            'norek' => 'required|digits_between:5,25',
+            'norek' => 'required|numeric',
             'atas_nama' => 'required',
             'logo' => 'required_without|max:10240',
         ]);
@@ -115,7 +114,7 @@ class MetodeBayarController extends Controller
                 $logo_metode = $request->file('logo');
                 $ext = $logo_metode->getClientOriginalExtension();
                 $filename = now()->timestamp . ".{$request->logo->getClientOriginalName()}";
-                Image::make($logo_metode)->resize(450, 300)->save(public_path('/images/' . $filename));
+                $logo_metode->save(public_path('/images/'), $filename);
 
                 $check = in_array($ext, $allowExtension);
 

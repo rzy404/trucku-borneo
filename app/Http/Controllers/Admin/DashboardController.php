@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Image;
-use DB;
-use Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class DashboardController extends Controller
@@ -41,7 +41,11 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('admin.dashboard.index');
+        $countCostumer = DB::table('tb_costumer')->count();
+        $countTruk = DB::table('tb_truk')->count();
+        $countTransaksi = DB::table('tb_transaksi')->count();
+        $countDriver = DB::table('tb_driver')->count();
+        return view('admin.dashboard.index', compact('countCostumer', 'countTruk', 'countTransaksi', 'countDriver'));
     }
 
     public function getProfile()

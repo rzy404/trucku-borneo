@@ -14,7 +14,8 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Metode Pembayaran</label>
                             <div class="col-sm-9">
-                                {!! Form::text('metode_bayar', null, array('id' => 'metode_bayar', 'placeholder' => 'Metode Pembayaran','class' => 'form-control')) !!}
+                                {!! Form::text('metode_bayar', null, array('id' => 'metode_bayar', 'placeholder' =>
+                                'Metode Pembayaran','class' => 'form-control')) !!}
                                 @if ($errors->has('metode_bayar'))
                                 <span class="text-danger">{{ $errors->first('metode_bayar') }}</span>
                                 @endif
@@ -23,7 +24,10 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">No Rekening</label>
                             <div class="col-sm-9">
-                                {!! Form::text('norek', null, array('id' => 'norek', 'placeholder' => 'No Rekening','class' => 'form-control')) !!}
+                                {!! Form::text('norek', null, array(
+                                'id' => 'norek',
+                                'placeholder' => 'No Rekening',
+                                'class' => 'form-control')) !!}
                                 @if ($errors->has('norek'))
                                 <span class="text-danger">{{ $errors->first('norek') }}</span>
                                 @endif
@@ -32,7 +36,10 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Atas Nama</label>
                             <div class="col-sm-9">
-                                {!! Form::text('atas_nama', null, array('id' => 'atas_nama', 'placeholder' => 'Atas Nama','class' => 'form-control')) !!}
+                                {!! Form::text('atas_nama', null, array(
+                                'id' => 'atas_nama',
+                                'placeholder' => 'Atas Nama',
+                                'class' => 'form-control')) !!}
                                 @if ($errors->has('atas_nama'))
                                 <span class="text-danger">{{ $errors->first('atas_nama') }}</span>
                                 @endif

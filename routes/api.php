@@ -26,14 +26,18 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     //route profile
     Route::get('/detail-profile', [Home::class, 'GetProfile']);
-    Route::post('/update-profile', [Home::class, 'UpdateProfile']);
+    Route::post('/update-profile', [Profile::class, 'UpdateProfile']);
     Route::post('/change-password', [Profile::class, 'changePassword']);
     Route::post('/change-avatar', [Profile::class, 'changeAvatar']);
-    Route::post('/update-perusahaan/{id}', [profile::class, 'updatePerusahaan']);
 
     //route truck
     Route::get('/truck', [Home::class, 'GetTruck']);
+    Route::get('/armada', [Home::class, 'GetJenisTruk']);
 
     //route transaksi
-    Route::post('/transaksi/{perusahaan}/{jenis_truk}', [transaksi::class, 'transaksi']);
+    Route::post('/transaksi', [transaksi::class, 'transaksi']);
+    Route::post('/upload-bukti', [transaksi::class, 'uploadBuktiBayar']);
+
+    //route get metode pembayaran
+    Route::get('/metode-pembayaran', [Home::class, 'GetMetodePembayaran']);
 });

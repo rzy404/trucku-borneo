@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Costumer as costumer;
 use App\Models\Truk as truk;
+use App\Models\JenisTruk as jenis;
+use App\Models\MetodeBayar as metode;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -21,9 +22,21 @@ class HomeController extends Controller
         return response()->json($data);
     }
 
+    public function GetJenisTruk()
+    {
+        $data = jenis::all();
+        return response()->json(['message' => 'Success', 'data' => $data]);
+    }
+
     public function GetTruck()
     {
         $data = truk::all();
+        return response()->json(['message' => 'Success', 'data' => $data]);
+    }
+
+    public function GetMetodePembayaran()
+    {
+        $data = metode::all();
         return response()->json(['message' => 'Success', 'data' => $data]);
     }
 }

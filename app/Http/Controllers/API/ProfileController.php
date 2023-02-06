@@ -27,6 +27,7 @@ class ProfileController extends Controller
             $user = costumer::findOrfail(Auth::user()->id);
             $user->password = bcrypt($request->get('new_password'));
             $user->save();
+            $user->tokens()->delete();
 
             return response()->json([
                 'message' => 'Password berhasil diubah',
@@ -74,21 +75,24 @@ class ProfileController extends Controller
         }
     }
 
-    public function updatePerusahaan(Request $request, $id)
+    public function updateProfile(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
+                'nama' => 'required|string|max:255',
+                'email' => 'required|string|max:125',
+                'no_telpon' => 'required|string|max:15',
                 'nama_perusahaan' => 'required|string|max:255',
                 'alamat_perusahaan' => 'required|string|max:125'
             ]);
-
-            $costumer = costumer::findOrfail($id);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors());
             }
 
-            if ($costumer->perusahaan == NULL) {
+            $user = costumer::findOrfail(Auth::user()->id);
+
+            if ($user->perusahaan == NULL) {
                 $perusahaan = perusahaan::create([
                     'id_perusahaan' => genKode::generate([
                         'table' => 'tb_perusahaan_cost',
@@ -99,25 +103,31 @@ class ProfileController extends Controller
                     'nama_perusahaan' => $request->nama_perusahaan,
                     'alamat_perusahaan' => $request->alamat_perusahaan,
                 ]);
-                $costumer->perusahaan = $perusahaan->id_perusahaan;
-                $costumer->save();
+                $user->perusahaan = $perusahaan->id_perusahaan;
+                $user->save();
             } else {
-                $perusahaan = perusahaan::where('id_perusahaan', $costumer->perusahaan)->update([
+                $perusahaan = perusahaan::where('id_perusahaan', $user->perusahaan)->update([
                     'nama_perusahaan' => $request->nama_perusahaan,
                     'alamat_perusahaan' => $request->alamat_perusahaan,
                 ]);
             }
 
+            if ($user->email != $request->email) {
+                $user->email = $request->email;
+                $user->tokens()->delete();
+            }
+
+            $user->nama = $request->nama;
+            $user->no_telpon = $request->no_telpon;
+            $user->save();
+
             return response()->json([
-                'success' => true,
-                'message' => 'success',
-                'data' => $perusahaan,
+                'message' => 'Profile berhasil diubah',
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
-                'error' => true,
-                'message' => 'error',
-            ], 401);
+                'message' => $th->getMessage(),
+            ], 500);
         }
     }
 }

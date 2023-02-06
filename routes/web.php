@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\TruckController as truk;
 use App\Http\Controllers\Admin\MetodeBayarController as mbayar;
 use App\Http\Controllers\Admin\ConfigDataElectre as config;
 use App\Http\Controllers\Admin\AlgoritmaElectre as electre;
+use App\Http\Controllers\Admin\TransaksiController as transaksi;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +95,10 @@ Route::prefix('metode-pembayaran')->name('metodepb.')->middleware('auth')->group
 
 // route transaksi
 Route::prefix('transaksi')->name('transaksi.')->middleware('auth')->group(function () {
+    Route::get('/', [transaksi::class, 'index'])->name('index');
+    Route::post('/update_status/{id}', [transaksi::class, 'updateStatus'])->name('update_status');
+    Route::get('/bukti_bayar/{id}', [transaksi::class, 'showBuktiBayar'])->name('bukti_bayar');
+    Route::get('/detail/{id}', [transaksi::class, 'showDetail'])->name('detail');
 });
 
 Route::middleware('auth')->group(function () {
