@@ -59,7 +59,7 @@ class TruckController extends Controller
         $data_driver = Driver::all();
         $data_jenisTruk = jenis::all();
 
-        return view('admin.master-data.truck.index', compact(['data', 'data_driver', 'data_jenisTruk']))
+        return view('backend.admin.master-data.truck.index', compact(['data', 'data_driver', 'data_jenisTruk']))
             ->with('i', ($request->input('page', 1) - 1) * 5)
             ->with('s', ($request->input('page', 1) - 1) * 5);
     }

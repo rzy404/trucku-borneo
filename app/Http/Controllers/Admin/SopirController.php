@@ -41,7 +41,7 @@ class SopirController extends Controller
     public function index(Request $request)
     {
         $data = Driver::all();
-        return view('admin.manage-user.driver.index', compact(['data']))
+        return view('backend.admin.manage-user.driver.index', compact(['data']))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 

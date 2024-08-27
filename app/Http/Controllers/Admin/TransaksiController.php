@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\Transaksi as transaksi;
-// db
-use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
 {
@@ -55,7 +53,7 @@ class TransaksiController extends Controller
             )
             ->get();
 
-        return view('admin.master-data.transaksi.index', compact(['data']))
+        return view('backend.admin.master-data.transaksi.index', compact(['data']))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 
@@ -87,18 +85,21 @@ class TransaksiController extends Controller
     {
         $data = transaksi::join('tb_perusahaan_cost', 'tb_transaksi.perusahaan', '=', 'tb_perusahaan_cost.id_perusahaan')
             ->join('tb_jenis_truk', 'tb_transaksi.truk', '=', 'tb_jenis_truk.id')
+            ->join('tb_transaksi_detail_alternatif', 'tb_transaksi.id', '=', 'tb_transaksi_detail_alternatif.transaksi')
             ->select(
                 'tb_transaksi.id as id_transaksi',
                 'tb_perusahaan_cost.nama_perusahaan',
                 'tb_jenis_truk.jenis_truk',
                 'tb_transaksi.alamat_asal',
                 'tb_transaksi.alamat_tujuan',
-                'tb_transaksi.jumlah_muatan',
                 'tb_transaksi.tgl_pengambilan',
                 'tb_transaksi.tgl_pengembalian',
                 'tb_transaksi.total_biaya',
+                'tb_transaksi.jumlah_muatan',
+                'tb_transaksi_detail_alternatif.jarak_tempuh',
+                'tb_transaksi_detail_alternatif.lama_sewa',
                 'tb_transaksi.status_penyewaan',
-                'tb_transaksi.bukti_bayar'
+                'tb_transaksi.bukti_bayar',
             )
             ->where('tb_transaksi.id', $id)
             ->first();

@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use DB;
+use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Haruncpi\LaravelIdGenerator\IdGenerator as genKode;
-use App\Models\Electre as configElectre;
+use App\Models\Kriteria as configElectre;
 use App\Models\Perusahaan as alternatif;
 
 class ConfigDataElectre extends Controller
@@ -41,7 +41,7 @@ class ConfigDataElectre extends Controller
     public function KriteriaIndex(Request $request)
     {
         $data = configElectre::all();
-        return view('admin.master-data.kriteria.index', compact(['data']))
+        return view('backend.admin.master-data.kriteria.index', compact(['data']))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 
@@ -123,11 +123,26 @@ class ConfigDataElectre extends Controller
 
     public function AlternatifIndex(Request $request)
     {
-        $dataAlternatif = alternatif::all();
         $dataKriteria = configElectre::all();
-        $dataNilaiAwal = configElectre::getTransaksiAlternatif();
+        $dataNilaiAwal = DB::table('tb_transaksi_detail_alternatif')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('tb_transaksi')
+                    ->whereRaw('tb_transaksi.id = tb_transaksi_detail_alternatif.transaksi')
+                    ->where('tb_transaksi.status_penyewaan', 0);
+            })
+            ->get();
+        $dataAlternatif = DB::table('tb_transaksi_detail_alternatif')
+            ->join('tb_perusahaan_cost', 'tb_perusahaan_cost.id_perusahaan', '=', 'tb_transaksi_detail_alternatif.perusahaan')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('tb_transaksi')
+                    ->whereRaw('tb_transaksi.id = tb_transaksi_detail_alternatif.transaksi')
+                    ->where('tb_transaksi.status_penyewaan', 0);
+            })
+            ->get();
 
-        return view('admin.master-data.alternatif.index', compact(
+        return view('backend.admin.master-data.alternatif.index', compact(
             [
                 'dataAlternatif',
                 'dataKriteria',

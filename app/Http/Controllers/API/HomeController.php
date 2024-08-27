@@ -8,6 +8,8 @@ use App\Models\JenisTruk as jenis;
 use App\Models\MetodeBayar as metode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+
 
 class HomeController extends Controller
 {
@@ -36,7 +38,21 @@ class HomeController extends Controller
 
     public function GetMetodePembayaran()
     {
-        $data = metode::all();
+        $data = metode::select('id', 'metode_bayar', 'logo')->get();
+        return response()->json(['message' => 'Success', 'data' => $data]);
+    }
+
+    public function GetNoRekening(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()]);
+        }
+
+        $data = metode::where('id', $request->id)->first(['norek', 'atas_nama']);
         return response()->json(['message' => 'Success', 'data' => $data]);
     }
 }

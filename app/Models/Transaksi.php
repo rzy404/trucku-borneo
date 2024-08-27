@@ -30,8 +30,11 @@ class Transaksi extends Model
         'tgl_pengembalian',
         'total_biaya',
         'status_penyewaan',
-        'bukti_bayar'
+        'bukti_bayar',
+        'tgl_transaksi'
     ];
 
+    // fillable id alias 
+    public $incrementing = false;
     public $timestamps = false;
 }

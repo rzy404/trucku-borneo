@@ -46,7 +46,7 @@ class OperatorController extends Controller
         $data = User::all();
         $roles = Role::pluck('name', 'name')->all();
 
-        return view('admin.manage-user.operator.index', compact(['data', 'roles']))
+        return view('backend.admin.manage-user.operator.index', compact(['data', 'roles']))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 

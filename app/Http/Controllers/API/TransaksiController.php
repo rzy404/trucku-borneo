@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\Electre as kriteria;
+use App\Models\Kriteria as kriteria;
 use App\Models\Transaksi as transaksi;
 use App\Models\Perusahaan as costumer;
 
@@ -26,6 +26,7 @@ class TransaksiController extends Controller
             'bukti_bayar' => 'nullable',
             'jarak_tempuh' => 'required|numeric',
             'lama_sewa' => 'required|numeric',
+            // 'biaya_solar' => 'required|numeric',
         ])->validate();
 
         $perusahaan = costumer::findOrfail(Auth::user()->perusahaan);
@@ -42,6 +43,7 @@ class TransaksiController extends Controller
             'tgl_pengembalian' => $request->tgl_pengembalian,
             'total_biaya' => $request->total_biaya,
             'bukti_bayar' => $request->bukti_bayar,
+            'tgl_transaksi' => date('Y-m-d'),
         ];
         $dataTransaksi['tgl_pengambilan'] = date('Y-m-d', strtotime($dataTransaksi['tgl_pengambilan']));
         $dataTransaksi['tgl_pengembalian'] = date('Y-m-d', strtotime($dataTransaksi['tgl_pengembalian']));
@@ -57,6 +59,8 @@ class TransaksiController extends Controller
 
         $this->HitungNilaiAlternatif(
             $request,
+            //get id transaksi
+            $dataTransaksi['id'],
             $dataTransaksi['perusahaan'],
             $dataTransaksi['jumlah_muatan'],
             $dataTransaksi['total_biaya'],
@@ -80,7 +84,9 @@ class TransaksiController extends Controller
         $transaksi = transaksi::findOrfail($request->id_transaksi);
         if ($request->hasFile('bukti_bayar')) {
             $file = $request->file('bukti_bayar');
-            $fileName = $request->id_transaksi . '.' . $file->getClientOriginalExtension();
+            // $fileName = $request->id_transaksi . '.' . $file->getClientOriginalExtension();
+            //get random file name with extension using time
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('images/bukti_bayar'), $fileName);
             $transaksi->bukti_bayar = $fileName;
             $transaksi->save();
@@ -92,7 +98,39 @@ class TransaksiController extends Controller
         ], 200);
     }
 
-    private function HitungNilaiAlternatif(Request $request, $perusahaan)
+    // get data transaksi by costumer
+    public function getTransaksiByCostumer()
+    {
+        $perusahaan = costumer::findOrfail(Auth::user()->perusahaan);
+
+        $transaksi = transaksi::join('tb_perusahaan_cost', 'tb_transaksi.perusahaan', '=', 'tb_perusahaan_cost.id_perusahaan')
+            ->join('tb_jenis_truk', 'tb_transaksi.truk', '=', 'tb_jenis_truk.id')
+            ->join('tb_transaksi_detail_alternatif', 'tb_transaksi.id', '=', 'tb_transaksi_detail_alternatif.transaksi')
+            ->select(
+                'tb_transaksi.id as id_transaksi',
+                'tb_perusahaan_cost.nama_perusahaan',
+                'tb_jenis_truk.jenis_truk',
+                'tb_transaksi.alamat_asal',
+                'tb_transaksi.alamat_tujuan',
+                'tb_transaksi.tgl_pengambilan',
+                'tb_transaksi.tgl_pengembalian',
+                'tb_transaksi.total_biaya',
+                'tb_transaksi.jumlah_muatan',
+                'tb_transaksi_detail_alternatif.jarak_tempuh',
+                'tb_transaksi_detail_alternatif.lama_sewa',
+                'tb_transaksi.status_penyewaan',
+                'tb_transaksi.bukti_bayar',
+            )
+            ->where('tb_transaksi.perusahaan', $perusahaan->id_perusahaan)
+            ->get();
+
+        return response()->json([
+            'message' => 'success',
+            'data' => $transaksi,
+        ], 200);
+    }
+
+    private function HitungNilaiAlternatif(Request $request, $id, $perusahaan)
     {
         Validator::make($request->all(), [
             'jarak_tempuh' => 'required',
@@ -102,15 +140,17 @@ class TransaksiController extends Controller
         ]);
 
         $data = [
+            //get id transaksi
+            'transaksi' => $id,
             'perusahaan' => $perusahaan,
             'jarak_tempuh' => $request->jarak_tempuh,
             'jumlah_muatan' => $request->jumlah_muatan,
             'total_biaya' => $request->total_biaya,
             'lama_sewa' => $request->lama_sewa,
-            // 'kriteria' => $request->kriteria,
         ];
 
         DB::table('tb_transaksi_detail_alternatif')->insert([
+            'transaksi' => $data['transaksi'],
             'perusahaan' => $data['perusahaan'],
             'jarak_tempuh' => $data['jarak_tempuh'],
             'jumlah_muatan' => $data['jumlah_muatan'],
@@ -126,41 +166,41 @@ class TransaksiController extends Controller
             $dataKriteria[3]->id,
         ];
 
-        if ($data['jarak_tempuh'] < 250) {
-            $bobot[] = 5;
-        } else if ($data['jarak_tempuh'] <= 500) {
+        if ($data['jarak_tempuh'] < 30) {
+            $bobot[] = 4;
+        } else if ($data['jarak_tempuh'] <= 50) {
             $bobot[] = 3;
-        } else if ($data['jarak_tempuh'] > 500) {
+        } else if ($data['jarak_tempuh'] > 50) {
             $bobot[] = 2;
         }
 
-        if ($data['jumlah_muatan'] < 600000) {
+        if ($data['jumlah_muatan'] < 125) {
+            $bobot[] = 5;
+        } else if ($data['jumlah_muatan'] <= 900) {
             $bobot[] = 3;
-        } else if ($data['jumlah_muatan'] >= 1000000) {
-            $bobot[] = 4;
-        } else if ($data['jumlah_muatan'] > 1000000) {
+        } else if ($data['jumlah_muatan'] > 900) {
+            $bobot[] = 2;
+        }
+
+        if ($data['total_biaya'] < 50000000) {
+            $bobot[] = 2;
+        } else if ($data['total_biaya'] <= 150000000) {
+            $bobot[] = 3;
+        } else if ($data['total_biaya'] > 150000000) {
             $bobot[] = 5;
         }
 
-        if ($data['total_biaya'] < 200000000) {
+        if ($data['lama_sewa'] < 15) {
+            $bobot[] = 5;
+        } else if ($data['lama_sewa'] <= 42) {
             $bobot[] = 2;
-        } else if ($data['total_biaya'] >= 500000000) {
-            $bobot[] = 3;
-        } else if ($data['total_biaya'] > 700000000) {
-            $bobot[] = 4;
-        }
-
-        if ($data['lama_sewa'] < 25) {
-            $bobot[] = 4;
-        } else if ($data['lama_sewa'] <= 40) {
-            $bobot[] = 3;
-        } else if ($data['lama_sewa'] > 40) {
+        } else if ($data['lama_sewa'] > 42) {
             $bobot[] = 1;
         }
         foreach ($dataKriteria as $key => $value) {
             $savedata[] = DB::table('tb_alternatif')->insertGetId(
                 [
-                    'perusahaan' => $data['perusahaan'],
+                    'transaksi' => $data['transaksi'],
                     'kriteria' => $res_kriteria[$key],
                     'nilai' => $bobot[$key],
                 ]

@@ -45,12 +45,12 @@ class DashboardController extends Controller
         $countTruk = DB::table('tb_truk')->count();
         $countTransaksi = DB::table('tb_transaksi')->count();
         $countDriver = DB::table('tb_driver')->count();
-        return view('admin.dashboard.index', compact('countCostumer', 'countTruk', 'countTransaksi', 'countDriver'));
+        return view('backend.admin.dashboard.index', compact('countCostumer', 'countTruk', 'countTransaksi', 'countDriver'));
     }
 
     public function getProfile()
     {
-        return view('admin.dashboard.profile');
+        return view('backend.admin.dashboard.profile');
     }
 
     public function updateProfile(Request $request)

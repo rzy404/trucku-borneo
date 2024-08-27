@@ -35,12 +35,12 @@
     <div id="main-wrapper">
 
         {{-- navbar --}}
-        @include('admin.shared.navbar')
+        @include('backend.admin.shared.navbar')
         {{-- end navbar --}}
 
         {{-- Sidebar --}}
         <div class="deznav">
-            @include('admin.shared.sidebar')
+            @include('backend.admin.shared.sidebar')
         </div>
         {{-- end Sidebar --}}
 
@@ -55,11 +55,11 @@
 
     {{-- footer --}}
     <div class="footer">
-        @include('admin.shared.footer')
+        @include('backend.admin.shared.footer')
     </div>
     {{-- end footer --}}
 
-    @include('admin.shared.logout-modal')
+    @include('backend.admin.shared.logout-modal')
     <!--Scripts-->
     <!-- Required vendors -->
     <script src="{{ asset('vendor/global/global.min.js') }}"></script>

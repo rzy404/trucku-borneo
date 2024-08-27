@@ -37,7 +37,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     //route transaksi
     Route::post('/transaksi', [transaksi::class, 'transaksi']);
     Route::post('/upload-bukti', [transaksi::class, 'uploadBuktiBayar']);
+    Route::get('/history-pemesanan', [transaksi::class, 'getTransaksiByCostumer']);
 
     //route get metode pembayaran
     Route::get('/metode-pembayaran', [Home::class, 'GetMetodePembayaran']);
+
+    //route get no rekening pembayaran berdasarkan id metode pembayaran
+    Route::post('/no-rekening', [Home::class, 'GetNoRekening']);
 });

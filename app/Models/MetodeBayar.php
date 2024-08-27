@@ -19,7 +19,9 @@ class MetodeBayar extends Model
      */
 
     protected $table = "tb_pembayaran";
+    protected $primaryKey = "id";
     protected $fillable = [
+        'id',
         'metode_bayar',
         'norek',
         'logo',
@@ -27,4 +29,5 @@ class MetodeBayar extends Model
     ];
 
     public $timestamps = false;
+    public $incrementing = false;
 }

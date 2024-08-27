@@ -41,7 +41,7 @@ class MetodeBayarController extends Controller
     {
         $data = mp::all();
 
-        return view('admin.master-data.metode-pembayaran.index', compact(['data']))
+        return view('backend.admin.master-data.metode-pembayaran.index', compact(['data']))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 

@@ -11,18 +11,16 @@
                             <div class="text-center mb-3">
                                 <img src="{{ asset('images/icon/logo-full.png') }}" alt="">
                             </div>
-                            <h4 class="text-center mb-4 text-white">{{ __('Sign in Your Account') }}</h4>
+                            <h4 class="text-center mb-4 text-white">{{session()->has('bahasa') ?
+                                GoogleTranslate::trans("Sign in Your Account",
+                                session()->get('bahasa')) : GoogleTranslate::trans("Sign in Your Account", 'id')}}
+                            </h4>
                             <form action="{{ route('login') }}" method="post">
                                 @csrf
                                 <div class="form-group">
-                                    <label class="mb-1 text-white"><strong>{{ __('E-Mail Address') }}</strong></label>
+                                    <label class="mb-1 text-white"><strong>{{ __('E-Mail') }}</strong></label>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                    {{-- @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror --}}
                                 </div>
                                 <div class="form-group">
                                     <label class="mb-1 text-white"><strong>{{ __('Password') }}</strong></label>

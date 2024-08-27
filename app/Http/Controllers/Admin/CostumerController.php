@@ -45,7 +45,7 @@ class CostumerController extends Controller
             ->leftJoin('tb_perusahaan_cost', 'tb_perusahaan_cost.id_perusahaan', '=', 'tb_costumer.perusahaan')
             ->get();
 
-        return view('admin.manage-user.costumer.index', compact(['data']))
+        return view('backend.admin.manage-user.costumer.index', compact(['data']))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\HomeController as frontend;
 use App\Http\Controllers\Admin\Auth\LoginController as Login;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\OperatorController as Operator;
@@ -11,8 +12,9 @@ use App\Http\Controllers\Admin\SopirController as Driver;
 use App\Http\Controllers\Admin\TruckController as truk;
 use App\Http\Controllers\Admin\MetodeBayarController as mbayar;
 use App\Http\Controllers\Admin\ConfigDataElectre as config;
-use App\Http\Controllers\Admin\AlgoritmaElectre as electre;
 use App\Http\Controllers\Admin\TransaksiController as transaksi;
+use App\Http\Controllers\Admin\Electre as electre;
+use App\Http\Controllers\Admin\LaporanController as laporan;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,9 +27,16 @@ use App\Http\Controllers\Admin\TransaksiController as transaksi;
 |
 */
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+// Route::get('/', function () {
+//     $home = new frontend();
+//     return $home->index();
+// });
+
+Route::get('/', [frontend::class, 'index'])->name('home');
+//route download file
+Route::get('/download', [frontend::class, 'download'])->name('download');
+
+Route::get('ganti-bahasa', [frontend::class, 'gantiBahasa'])->name('GantiBahasa');
 
 Auth::routes(['register' => false]);
 Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
@@ -120,5 +129,12 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('electre')->name('electre.')->group(function () {
         Route::get('/', [electre::class, 'Index'])->name('index');
+        Route::post('update-status/{id}', [electre::class, 'UpdateStatus'])->name('update_status');
+    });
+
+    // laporan
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/', [laporan::class, 'index'])->name('index');
+        Route::get('/print', [laporan::class, 'print'])->name('print');
     });
 });
